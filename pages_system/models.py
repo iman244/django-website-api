@@ -1,13 +1,14 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from mptt.models import MPTTModel, TreeForeignKey
 
-class Node(models.Model):
-    key = models.CharField(_("key"), max_length=255, primary_key=True, unique=True)
-    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
+class Node(MPTTModel):
+    key = models.CharField(_("key"), max_length=255, unique=True, primary_key=True)
+    parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
 
-    def __str__(self):
-        return self.key
-    
+    class MPTTMeta:
+        order_insertion_by = ['key']
+
 
 class NodeDetail(models.Model):
     order = models.SmallIntegerField(_("order"), default=0)
